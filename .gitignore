@@ -6,3 +6,6 @@ dist/
 user/models.toml
 user/user.json
 user/images/
+user/memory/
+debug-*.json
+deepseek-rewire.ts
