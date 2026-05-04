@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+*.lockb
+.DS_Store
+user/models.toml
+user/user.json
+user/images/
