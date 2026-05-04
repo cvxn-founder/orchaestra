@@ -33,6 +33,23 @@ import * as element_componentize from "./compute/element_componentize";
 import * as element_edit from "./compute/element_edit";
 import * as polymarket_scorer from "./compute/polymarket_scorer";
 import * as polymarket_ctf from "./compute/polymarket_ctf";
+import * as ds_ch_describe from "./compute/ds_ch_describe";
+import * as ds_ch_ttest from "./compute/ds_ch_ttest";
+import * as ds_ch_mann_whitney from "./compute/ds_ch_mann_whitney";
+import * as ds_ch_lead_lag from "./compute/ds_ch_lead_lag";
+import * as ds_ch_event_study from "./compute/ds_ch_event_study";
+import * as ds_ch_correlation_matrix from "./compute/ds_ch_correlation_matrix";
+import * as ds_ch_rolling_window from "./compute/ds_ch_rolling_window";
+import * as ds_ch_anomaly from "./compute/ds_ch_anomaly";
+import * as ds_ch_welch_ttest from "./compute/ds_ch_welch_ttest";
+import * as ds_ch_local_correlate from "./compute/ds_ch_local_correlate";
+import * as ds_ch_local_regression from "./compute/ds_ch_local_regression";
+import * as ds_ch_local_logistic from "./compute/ds_ch_local_logistic";
+import * as ds_local_chi_square from "./compute/ds_local_chi_square";
+import * as ds_local_bootstrap from "./compute/ds_local_bootstrap";
+import * as ds_local_anova from "./compute/ds_local_anova";
+import * as ds_local_effect_size from "./compute/ds_local_effect_size";
+import * as ds_local_permutation_test from "./compute/ds_local_permutation_test";
 import { ADMIN_USER_TOOLS } from "./admin/users";
 import { ADMIN_D1_TOOLS } from "./admin/d1";
 import { ADMIN_R2_TOOLS } from "./admin/r2";
@@ -82,6 +99,26 @@ const RAW: ToolModule[] = [
   { ...factsearch_parse, category: "compute" },
   { ...polymarket_scorer, category: "compute" },
   { ...polymarket_ctf, category: "compute" },
+  // compute/ds_ch (Tier 1 — ClickHouse native)
+  { ...ds_ch_describe, category: "compute" },
+  { ...ds_ch_ttest, category: "compute" },
+  { ...ds_ch_mann_whitney, category: "compute" },
+  { ...ds_ch_lead_lag, category: "compute" },
+  { ...ds_ch_event_study, category: "compute" },
+  { ...ds_ch_correlation_matrix, category: "compute" },
+  { ...ds_ch_rolling_window, category: "compute" },
+  { ...ds_ch_anomaly, category: "compute" },
+  { ...ds_ch_welch_ttest, category: "compute" },
+  // compute/ds_ch_local (Tier 2 — CH + local TS)
+  { ...ds_ch_local_correlate, category: "compute" },
+  { ...ds_ch_local_regression, category: "compute" },
+  { ...ds_ch_local_logistic, category: "compute" },
+  // compute/ds_local (Tier 3 — local TS)
+  { ...ds_local_chi_square, category: "compute" },
+  { ...ds_local_bootstrap, category: "compute" },
+  { ...ds_local_anova, category: "compute" },
+  { ...ds_local_effect_size, category: "compute" },
+  { ...ds_local_permutation_test, category: "compute" },
   // betterux/
   { ...element_inspect, category: "betterux" },
   { ...element_uilang, category: "betterux" },
