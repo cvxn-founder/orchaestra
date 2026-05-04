@@ -2,7 +2,7 @@ import { adminFetch } from "./_client";
 import type { ToolModule } from "../index";
 
 export const adminChSchema: ToolModule = {
-  name: "admin_ch_schema",
+  name: "clickhouse_schema",
   description: "FIRST STEP before querying: list all tables in a ClickHouse database, or describe a specific table's columns and types. Always use this before search/query to check which columns are searchable strings vs arrays.",
   category: "admin",
   inputSchema: {
@@ -19,8 +19,8 @@ export const adminChSchema: ToolModule = {
 };
 
 export const adminChSearch: ToolModule = {
-  name: "admin_ch_search",
-  description: "Search a ClickHouse table with ILIKE on TEXT columns only. IMPORTANT: only search STRING columns, not Array columns — check schema first with admin_ch_schema. Returns up to 50 rows.",
+  name: "clickhouse_search",
+  description: "Search a ClickHouse table with ILIKE on TEXT columns only. IMPORTANT: only search STRING columns, not Array columns — check schema first with clickhouse_schema. Returns up to 50 rows.",
   category: "admin",
   inputSchema: {
     type: "object",
@@ -43,7 +43,7 @@ export const adminChSearch: ToolModule = {
 };
 
 export const adminChPreview: ToolModule = {
-  name: "admin_ch_preview",
+  name: "clickhouse_preview",
   description: "Preview the most recent rows from a ClickHouse table. Use after checking schema. Returns up to 50 rows.",
   category: "admin",
   inputSchema: {
@@ -64,7 +64,7 @@ export const adminChPreview: ToolModule = {
 };
 
 export const adminChRelations: ToolModule = {
-  name: "admin_ch_relations",
+  name: "clickhouse_relations",
   description: "Find possible join keys across ClickHouse tables by matching column names. Use to discover cross-table relationships.",
   category: "admin",
   inputSchema: {
@@ -82,7 +82,7 @@ export const adminChRelations: ToolModule = {
 };
 
 export const adminChAggregate: ToolModule = {
-  name: "admin_ch_aggregate",
+  name: "clickhouse_aggregate",
   description: "Run GROUP BY aggregations (COUNT, SUM, AVG) on a ClickHouse table. Use for stats, counts, distributions. Returns up to 200 groups.",
   category: "admin",
   inputSchema: {
@@ -104,7 +104,7 @@ export const adminChAggregate: ToolModule = {
 };
 
 export const adminChQuery: ToolModule = {
-  name: "admin_ch_query",
+  name: "clickhouse_query",
   description: "Parameterized ClickHouse query with safe {param:String} placeholders. Use when search/preview aren't flexible enough. Returns up to 200 rows. Always check schema first to know column names and types.",
   category: "admin",
   inputSchema: {

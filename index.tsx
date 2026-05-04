@@ -996,22 +996,22 @@ function formatToolDisplay(name: string, args: Record<string, any>): { header: s
       show("llm_response", "response");
       show("url");
       break;
-    case "admin_ch_search":
+    case "clickhouse_search":
       show("database"); show("table"); show("searchColumns", "search cols"); show("query");
       break;
-    case "admin_ch_preview":
+    case "clickhouse_preview":
       show("database"); show("table"); show("columns"); show("limit");
       break;
-    case "admin_ch_schema":
+    case "clickhouse_schema":
       show("database"); show("table");
       break;
-    case "admin_ch_relations":
+    case "clickhouse_relations":
       show("database"); show("tables", "compare tables");
       break;
-    case "admin_ch_aggregate":
+    case "clickhouse_aggregate":
       show("database"); show("table"); show("groupBy", "group by"); show("aggregations", "aggs");
       break;
-    case "admin_ch_query":
+    case "clickhouse_query":
       show("database"); show("table"); show("selectColumns", "columns"); show("where");
       break;
     case "admin_r2_upload": case "admin_r2_put":
@@ -1071,7 +1071,7 @@ const TOOL_GROUPS = [
       { name: "project", tools: ["read_json", "run_tests", "typecheck", "package_info"] },
       { name: "meta", tools: ["ask_user", "write_plan", "remember"] },
       { name: "betterux", tools: ["element_inspect", "element_uilang", "element_componentize", "element_edit", "stack_detect", "element_semantic"] },
-      { name: "admin", tools: ["admin_users_list", "admin_user_create", "admin_user_update", "admin_user_disable", "admin_user_delete_plan", "admin_user_hard_delete", "admin_user_files", "admin_user_files_delete_plan", "admin_user_files_hard_delete", "admin_d1_tables", "admin_d1_schema", "admin_d1_rows", "admin_d1_select", "admin_ch_search", "admin_ch_preview", "admin_ch_schema", "admin_ch_relations", "admin_ch_aggregate", "admin_ch_query", "admin_r2_list", "admin_r2_metadata", "admin_r2_content", "admin_r2_upload", "admin_r2_put", "admin_r2_delete", "admin_audit_log"] },
+      { name: "admin", tools: ["admin_users_list", "admin_user_create", "admin_user_update", "admin_user_disable", "admin_user_delete_plan", "admin_user_hard_delete", "admin_user_files", "admin_user_files_delete_plan", "admin_user_files_hard_delete", "admin_d1_tables", "admin_d1_schema", "admin_d1_rows", "admin_d1_select", "clickhouse_search", "clickhouse_preview", "clickhouse_schema", "clickhouse_relations", "clickhouse_aggregate", "clickhouse_query", "admin_r2_list", "admin_r2_metadata", "admin_r2_content", "admin_r2_upload", "admin_r2_put", "admin_r2_delete", "admin_audit_log"] },
     ],
   },
   {
@@ -1423,7 +1423,7 @@ function App() {
   const [activeMode, setActiveMode] = useState<"plan" | "exec">("exec");
   const [model, setModel] = useState<string>(execModel);
   const [messages, setMessages] = useState<Message[]>([
-    { id: "sys", role: "system", content: "You are a helpful coding assistant. You can run shell commands when needed." },
+    { id: "sys", role: "system", content: "You are a helpful coding and data analysis assistant. You have access to many tools including ClickHouse database queries. When using tools: (1) call the tool, (2) read the result, (3) IMMEDIATELY call the next tool — do NOT just describe what you see. Chain tool calls to drill down: schema → preview → search → analyze. Keep going until you have the answer." },
   ]);
   const [input, setInput] = useState("");
   const [mode, setMode] = useState<AppMode>("splash");
