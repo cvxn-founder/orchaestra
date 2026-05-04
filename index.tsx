@@ -708,12 +708,36 @@ function FormattedContent({ text }: { text: string }) {
         return <JsonTable data={parsed} />;
       }
       if (!Array.isArray(parsed) && typeof parsed === "object" && parsed !== null) {
+        // Check for nested arrays of objects — render those as tables
+        for (const [k, v] of Object.entries(parsed)) {
+          if (Array.isArray(v) && v.length > 0 && typeof v[0] === "object") {
+            return (
+              <Box flexDirection="column">
+                <Text bold color="cyan">{k}:</Text>
+                <JsonTable data={v} />
+              </Box>
+            );
+          }
+          // Nested object with array inside: e.g. { data: { tables: [...] } }
+          if (typeof v === "object" && v !== null && !Array.isArray(v)) {
+            for (const [nk, nv] of Object.entries(v as Record<string, any>)) {
+              if (Array.isArray(nv) && nv.length > 0 && typeof nv[0] === "object") {
+                return (
+                  <Box flexDirection="column">
+                    <Text bold color="cyan">{k}.{nk}:</Text>
+                    <JsonTable data={nv} />
+                  </Box>
+                );
+              }
+            }
+          }
+        }
         return (
           <Box flexDirection="column">
             {Object.entries(parsed).map(([k, v]) => (
               <Box key={k}>
                 <Text bold color="cyan">{k}: </Text>
-                <Text>{typeof v === "string" ? v : JSON.stringify(v).slice(0, 120)}</Text>
+                <Text>{typeof v === "string" ? v : typeof v === "number" ? String(v) : JSON.stringify(v).slice(0, 120)}</Text>
               </Box>
             ))}
           </Box>
@@ -869,7 +893,7 @@ function MessageBubble({ msg }: { msg: Message }) {
       </Box>
       <Box marginLeft={isUser ? 4 : 2} marginRight={isUser ? 0 : 4}>
         {isUser
-          ? <Text color="black" wrap="wrap">{msg.content || (msg.isStreaming ? "…" : "")}</Text>
+          ? <Text color="white" wrap="wrap">{msg.content || (msg.isStreaming ? "…" : "")}</Text>
           : <FormattedContent text={msg.content || (msg.isStreaming ? "…" : "")} />
         }
       </Box>
@@ -1047,7 +1071,7 @@ function ToolConfirm({
       <Text bold color="yellow"> ⚠  Tool: {display.header}</Text>
       <Text> </Text>
       {display.lines.map((line, i) => (
-        <Text key={i} color="black">{line}</Text>
+        <Text key={i} color="white">{line}</Text>
       ))}
       <Text> </Text>
       <ConfirmInput onConfirm={onApprove} onCancel={onDeny} />
@@ -1245,7 +1269,7 @@ function SplashScreen({ onEnter, width }: { onEnter: () => void; width: number }
       <Text>{"\n"}</Text>
       {width >= 60 ? (
         <Gradient name="atlas">
-          <BigText text="ORCHAESTRA" font="chrome" />
+          <BigText text="ORCHAESTRA" font="ansi shadow" />
         </Gradient>
       ) : (
         <Gradient name="atlas">
@@ -1400,8 +1424,8 @@ function CommandPalette({
 function App() {
   const { exit } = useApp();
   const { stdout } = useStdout();
-  const [termRows, setTermRows] = useState(stdout?.rows ?? 24);
-  const [termCols, setTermCols] = useState(stdout?.columns ?? 80);
+  const [termRows, setTermRows] = useState(stdout?.rows ?? process.stdout.rows ?? 24);
+  const [termCols, setTermCols] = useState(stdout?.columns ?? process.stdout.columns ?? 80);
 
   useEffect(() => {
     const onResize = () => {
@@ -1423,7 +1447,7 @@ function App() {
   const [activeMode, setActiveMode] = useState<"plan" | "exec">("exec");
   const [model, setModel] = useState<string>(execModel);
   const [messages, setMessages] = useState<Message[]>([
-    { id: "sys", role: "system", content: "You are a helpful coding and data analysis assistant. You have access to many tools including ClickHouse database queries. When using tools: (1) call the tool, (2) read the result, (3) IMMEDIATELY call the next tool — do NOT just describe what you see. Chain tool calls to drill down: schema → preview → search → analyze. Keep going until you have the answer." },
+    { id: "sys", role: "system", content: "You are a coding and data analysis tool. Rules: (1) No emojis. (2) No verbose language. Keep facts short. No extra words. (3) Talk in imperative without full sentences. Bad: \"Ah yes! You're absolutely right.\" Good: \"Correct.\" Bad: \"Let me also check the database.\" Good: \"Checking database.\" (4) When using tools: call tool → read result → IMMEDIATELY call next tool. Chain: schema → preview → search → analyze. Never stop after one result — keep drilling until question is answered." },
   ]);
   const [input, setInput] = useState("");
   const [mode, setMode] = useState<AppMode>("splash");
@@ -1674,7 +1698,7 @@ function App() {
   }
 
   return (
-    <Box flexDirection="column" width={termCols} minHeight={termRows - 1}>
+    <Box flexDirection="column" width={termCols} height={termRows - 1}>
       <Header model={model} activeMode={activeMode} width={termCols} />
 
       {/* Messages */}
