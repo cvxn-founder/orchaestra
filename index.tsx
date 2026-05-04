@@ -661,8 +661,66 @@ function InlineText({ segs }: { segs: InlineSeg[] }) {
   );
 }
 
+function JsonTable({ data }: { data: Record<string, any>[] }) {
+  if (!data.length) return <Text color="gray">(empty)</Text>;
+  const keys = Object.keys(data[0]);
+  const maxW = Math.min(40, Math.floor(80 / keys.length));
+  const fmt = (v: any): string => {
+    if (v === null || v === undefined) return "";
+    if (typeof v === "object") return JSON.stringify(v).slice(0, maxW);
+    return String(v).slice(0, maxW);
+  };
+  return (
+    <Box flexDirection="column">
+      {/* Header */}
+      <Box>
+        {keys.map(k => (
+          <Box key={k} width={maxW + 1}>
+            <Text bold color="cyan">{k.slice(0, maxW).padEnd(maxW)}</Text>
+          </Box>
+        ))}
+      </Box>
+      <Text color="gray">{"─".repeat(Math.min(keys.length * (maxW + 1), 120))}</Text>
+      {/* Rows */}
+      {data.slice(0, 50).map((row, i) => (
+        <Box key={i}>
+          {keys.map(k => (
+            <Box key={k} width={maxW + 1}>
+              <Text>{fmt(row[k]).padEnd(maxW)}</Text>
+            </Box>
+          ))}
+        </Box>
+      ))}
+      {data.length > 50 && <Text color="gray">… {data.length - 50} more rows</Text>}
+    </Box>
+  );
+}
+
 function FormattedContent({ text }: { text: string }) {
   if (!text) return <Text>…</Text>;
+
+  // Detect JSON array/object and render as table
+  const trimmed = text.trim();
+  if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === "object") {
+        return <JsonTable data={parsed} />;
+      }
+      if (!Array.isArray(parsed) && typeof parsed === "object" && parsed !== null) {
+        return (
+          <Box flexDirection="column">
+            {Object.entries(parsed).map(([k, v]) => (
+              <Box key={k}>
+                <Text bold color="cyan">{k}: </Text>
+                <Text>{typeof v === "string" ? v : JSON.stringify(v).slice(0, 120)}</Text>
+              </Box>
+            ))}
+          </Box>
+        );
+      }
+    } catch {}
+  }
 
   // Split into code blocks and regular text
   const parts: { type: "text" | "code"; content: string }[] = [];
