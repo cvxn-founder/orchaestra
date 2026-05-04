@@ -1269,7 +1269,7 @@ function SplashScreen({ onEnter, width }: { onEnter: () => void; width: number }
       <Text>{"\n"}</Text>
       {width >= 60 ? (
         <Gradient name="atlas">
-          <BigText text="ORCHAESTRA" font="ansi shadow" />
+          <BigText text="ORCHAESTRA" font="block" />
         </Gradient>
       ) : (
         <Gradient name="atlas">
@@ -1389,8 +1389,10 @@ function CommandPalette({
   const cmdOptions = COMMANDS.map(c => ({ label: `/${c.id}  —  ${c.label}`, value: c.id }));
 
   const handleCmd = (value: string) => {
-    if (value === "model") setLevel("model-picker");
-    else if (value === "toggle") onToggleMode();
+    if (value === "model") { setLevel("model-picker"); return; }
+    // Close palette before acting to prevent Select re-fire loop
+    onCancel();
+    if (value === "toggle") onToggleMode();
     else if (value === "config") onConfig();
     else if (value === "clear") onClear();
     else if (value === "exit") onExit();
@@ -1616,7 +1618,9 @@ function App() {
       }
       return h;
     });
-    history.push({ role: "tool" as any, content: output, tool_call_id: pendingTool.id });
+    // Truncate large tool results to avoid flooding model context
+    const truncated = output.length > 4000 ? output.slice(0, 4000) + `\n… (truncated from ${output.length} chars)` : output;
+    history.push({ role: "tool" as any, content: truncated, tool_call_id: pendingTool.id });
 
     const continueId = randomId();
     setMessages(prev => [...prev, { id: continueId, role: "assistant", content: "", model, isStreaming: true }]);
